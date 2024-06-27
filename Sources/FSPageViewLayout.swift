@@ -129,7 +129,7 @@ class FSPagerViewLayout: UICollectionViewLayout {
         while origin-maxPosition <= max(CGFloat(100.0) * .ulpOfOne * abs(origin+maxPosition), .leastNonzeroMagnitude) {
             let indexPath = IndexPath(item: itemIndex%self.numberOfItems, section: itemIndex/self.numberOfItems)
             let attributes = self.layoutAttributesForItem(at: indexPath) as! FSPagerViewLayoutAttributes
-            self.applyTransform(to: attributes, with: self.pagerView?.transformer)
+            self.applyTransform(to: attributes, with: self.pagerView?.transformer , index: indexPath.row)
             layoutAttributes.append(attributes)
             itemIndex += 1
             origin += self.itemSpacing
@@ -272,7 +272,7 @@ class FSPagerViewLayout: UICollectionViewLayout {
         collectionView.bounds = newBounds
     }
     
-    fileprivate func applyTransform(to attributes: FSPagerViewLayoutAttributes, with transformer: FSPagerViewTransformer?) {
+    fileprivate func applyTransform(to attributes: FSPagerViewLayoutAttributes, with transformer: FSPagerViewTransformer?, index: Int = 0) {
         guard let collectionView = self.collectionView else {
             return
         }
@@ -287,8 +287,8 @@ class FSPagerViewLayout: UICollectionViewLayout {
             let ruler = collectionView.bounds.midY
             attributes.position = (attributes.center.y-ruler)/self.itemSpacing
         }
-        attributes.zIndex = Int(self.numberOfItems)-Int(attributes.position)
-        transformer.applyTransform(to: attributes)
+        attributes.zIndex = Int(self.numberOfItems)-Int(attributes.position) + index
+        transformer.applyTransform(to: attributes , index: index)
     }
 
 }

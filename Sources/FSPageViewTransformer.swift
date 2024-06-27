@@ -26,8 +26,8 @@ open class FSPagerViewTransformer: NSObject {
     open internal(set) weak var pagerView: FSPagerView?
     open internal(set) var type: FSPagerViewTransformerType
     
-    @objc open var minimumScale: CGFloat = 0.65
-    @objc open var minimumAlpha: CGFloat = 0.6
+    @objc open var minimumScale: CGFloat = 0.8
+    @objc open var minimumAlpha: CGFloat = 0.7
     
     @objc
     public init(type: FSPagerViewTransformerType) {
@@ -43,7 +43,7 @@ open class FSPagerViewTransformer: NSObject {
     }
     
     // Apply transform to attributes - zIndex: Int, frame: CGRect, alpha: CGFloat, transform: CGAffineTransform or transform3D: CATransform3D.
-    open func applyTransform(to attributes: FSPagerViewLayoutAttributes) {
+    open func applyTransform(to attributes: FSPagerViewLayoutAttributes, index: Int = 0) {
         guard let pagerView = self.pagerView else {
             return
         }
@@ -152,13 +152,18 @@ open class FSPagerViewTransformer: NSObject {
                 // This type doesn't support vertical mode
                 return
             }
-            let scale = max(1 - (1-self.minimumScale) * abs(position), self.minimumScale)
+            let scale = 1 - (1-self.minimumScale - CGFloat(index) * 0.02) * abs(position)
             let transform = CGAffineTransform(scaleX: scale, y: scale)
             attributes.transform = transform
             let alpha = (self.minimumAlpha + (1-abs(position))*(1-self.minimumAlpha))
             attributes.alpha = alpha
             let zIndex = (1-abs(position)) * 10
             attributes.zIndex = Int(zIndex)
+         
+//            self.minimumScale = self.minimumScale-0.05
+//            if self.minimumScale < 0.6 {
+//                self.minimumScale = 0.6
+//            }
         case .coverFlow:
             guard scrollDirection == .horizontal else {
                 // This type doesn't support vertical mode
